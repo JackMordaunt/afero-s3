@@ -32,9 +32,10 @@ type Fs struct {
 
 // UploadedFileProperties defines all the set properties applied to future files
 type UploadedFileProperties struct {
-	ACL          *string // ACL defines the right to apply
-	CacheControl *string // CacheControl defines the Cache-Control header
-	ContentType  *string // ContentType define the Content-Type header
+	ACL             *string // ACL defines the right to apply
+	CacheControl    *string // CacheControl defines the Cache-Control header
+	ContentType     *string // ContentType defines the Content-Type header
+	ContentEncoding *string // ContentEncoding defines the Content-Encoding header
 }
 
 // NewFs creates a new Fs object writing files to a given S3 bucket.
@@ -151,7 +152,6 @@ func (fs *Fs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error)
 	}
 
 	info, err := file.Stat()
-
 	if err != nil {
 		return nil, err
 	}
@@ -351,6 +351,10 @@ func applyFileCreateProps(req *s3.PutObjectInput, p *UploadedFileProperties) {
 	if p.ContentType != nil {
 		req.ContentType = p.ContentType
 	}
+
+	if p.ContentEncoding != nil {
+		req.ContentEncoding = p.ContentEncoding
+	}
 }
 
 func applyFileWriteProps(req *s3manager.UploadInput, p *UploadedFileProperties) {
@@ -364,6 +368,10 @@ func applyFileWriteProps(req *s3manager.UploadInput, p *UploadedFileProperties) 
 
 	if p.ContentType != nil {
 		req.ContentType = p.ContentType
+	}
+
+	if p.ContentEncoding != nil {
+		req.ContentEncoding = p.ContentEncoding
 	}
 }
 
